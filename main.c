@@ -27,7 +27,7 @@ struct Dealer {
 
 
 struct Card* load_cards(struct Card* deck, int deck_size){
-    FILE *fptr = fopen("/Users/julienditto/Desktop/blackjack/cards.txt", "r");
+    FILE *fptr = fopen("cards.txt", "r");
     if (!fptr) {
         perror("Failed to open cards.txt");
         return NULL;
