@@ -1,1 +1,1 @@
-A fully functional blackjack game in C for CLI.
+A fully functional command-line Blackjack game written in C.
