@@ -11,7 +11,6 @@ struct Card {
 };
 
 struct Player {
-    int max_hand_count;
     struct Card* hand;
     int bet;
     float bankroll;
@@ -20,7 +19,6 @@ struct Player {
 };
 
 struct Dealer {
-    int max_hand_count;
     struct Card* hand;
     int* hand_count;
 };
@@ -184,12 +182,12 @@ bool play_blackjack(struct Card* deck_ptr, struct Player* player, struct Dealer*
                 dealer_hand_sum = calc_hand_sum(dealer->hand, *dealer->hand_count);
                 
                 //if dealer sum is 16 or under they have to draw another card
-                if (dealer_hand_sum <= 16){
+                while (dealer_hand_sum <= 16){
                     draw_card(deck_ptr, top_deck_count_ptr, dealer->hand, dealer->hand_count);
-                    printf("%s", "The dealer got < 16 so they drew a new card. Heres the dealers new hand\n");
-                    print_hand(dealer->hand, *dealer->hand_count);
                     dealer_hand_sum = calc_hand_sum(dealer->hand, *dealer->hand_count);
                 }
+                printf("%s", "Heres the dealers final hand\n");
+                print_hand(dealer->hand, *dealer->hand_count);
                 //dealer bust logic
                 if(dealer_hand_sum > 21) {
                     printf("%s", "The dealer busted over 21. You won the amount you bet.\n");
@@ -225,12 +223,11 @@ bool play_blackjack(struct Card* deck_ptr, struct Player* player, struct Dealer*
 }
 
 int main(int argc, char *argv[]) {
+    const int MAX_HAND_COUNT = 11;
     struct Player* player = malloc(sizeof(struct Player));
     struct Dealer* dealer = malloc(sizeof(struct Dealer));
-    player->hand = malloc(player->max_hand_count * sizeof(struct Card)); //needs to be freed still
-    dealer->hand = malloc(dealer->max_hand_count * sizeof(struct Card)); // need to be freed still
-    player->max_hand_count = 11;
-    dealer->max_hand_count = 10;
+    player->hand = malloc(MAX_HAND_COUNT * sizeof(struct Card)); //needs to be freed still
+    dealer->hand = malloc(MAX_HAND_COUNT * sizeof(struct Card)); // need to be freed still
     int player_hand_count = 0;
     int dealer_hand_count = 0;
     player->hand_count = &player_hand_count;
@@ -252,6 +249,12 @@ int main(int argc, char *argv[]) {
         while (play_game == true){
             setup_blackjack(deck_ptr, player, dealer, top_deck_count_ptr);
             play_game = play_blackjack(deck_ptr, player, dealer, top_deck_count_ptr);
+            if(*top_deck_count_ptr < 16) {
+                printf("%s", "Theres not enough cards left in the deck to play another round.\n");
+                printf("%s", "The Game is over\n");
+                play_game = false;
+                break;
+            }
         }
     }
     free(deck);
